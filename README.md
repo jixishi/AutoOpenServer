@@ -1,5 +1,5 @@
 ![[object Object]](https://socialify.git.ci/jixishi/AutoOpenServer/image?description=1&descriptionEditable=BE6%E8%87%AA%E5%8A%A8%E5%8C%96%E5%BC%80%E6%9C%8D%E5%B7%A5%E5%85%B7&font=Rokkitt&language=1&name=1&pattern=Floating%20Cogs&stargazers=1&theme=Dark)
-> #BE6自动化开服工具
+> # BE6自动化开服工具
 > [![For Mindustry](https://img.shields.io/badge/Mindustry-orange)](https://github.com/Anuken/Mindustry)
 
 ## **已实现**
@@ -15,7 +15,7 @@
 [![b站粉丝][bilibili]](https://space.bilibili.com/5730067)
 
 
-##许可证
+## 许可证
 
 
 
