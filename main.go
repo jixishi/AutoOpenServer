@@ -32,9 +32,13 @@ func ConvertByte2String(byte []byte, charset Charset) string {
 	}
 	return str
 }
-func main() {
+func init() {
 	fmt.Println("欢迎使用BE6-CLOUD一键开服器")
 	var config tools.Config
+	err := os.Chdir("./")
+	err = os.MkdirAll("./config/mods", 0777)
+	err = os.MkdirAll("./config/scripts", 0777)
+
 	config = tools.GetConfig()
 	MVersion, MDownUrl := tools.MGetVersion(config.MindustryTagUrl)
 	WVersion, WJarUrl, WZipUrl := tools.WGetVersion(config.WayZerTagUrl)
@@ -43,6 +47,7 @@ func main() {
 	DownList := tools.NewDownloader("./")
 	DownList.Concurrent = 3
 	var Down bool
+	var Mode = false
 	if config.MindustryVersion != MVersion {
 		fmt.Println("Mindustry最新版本：", MVersion, "有更新")
 		config.MindustryVersion = MVersion
@@ -56,16 +61,28 @@ func main() {
 		DownList.AppendResource("WayZer.jar", WJarUrl)
 		DownList.AppendResource("WayZer.zip", WZipUrl)
 		Down = true
+		Mode = true
 	}
 	if Down {
-		DownList.Start()
+		err = DownList.Start()
 		tools.SaveConfig(config)
+		if Mode {
+			err = os.Rename("./WayZer.jar", "./config/mods/WayZer.jar")
+			err = tools.DeCompressZip("./WayZer.zip", "./config/scripts")
+		}
 	}
+	if err != nil {
+		return
+	}
+}
+func main() {
+
 	//f, err := exec.LookPath("java")
 	//if err != nil {
 	//fmt.Println(err)
 	//}
 	//fmt.Println(f)
+	time.Sleep(6 * time.Microsecond)
 	fmt.Println("Server已经开启输入stop停止服务器!")
 
 	var cmd string
@@ -96,11 +113,16 @@ func main() {
 	}
 	go func() {
 		for sin.Scan() {
+			err := serverWriter.Close()
+			if err != nil {
+				return
+			}
 			cmdRe := ConvertByte2String(sin.Bytes(), Charset(font))
 			fmt.Println(cmdRe)
 		}
 	}()
 	input := bufio.NewScanner(os.Stdin)
+	out := bufio.NewWriter(serverWriter)
 	go func() {
 		for {
 			fmt.Print("\r> ")
@@ -111,9 +133,8 @@ func main() {
 			if strings.Compare(strings.TrimSpace(input.Text()), ".exit") == 0 {
 				os.Exit(0)
 			}
-			_, err := serverWriter.Write(input.Bytes())
+			_, err := out.WriteString(input.Text())
 			if err != nil {
-				fmt.Println(err)
 				return
 			}
 		}

@@ -30,12 +30,23 @@ func GetConfig() Config {
 	return config
 }
 func InitConfig() {
-	viper.Set("MindustryVersion", "1")
+	MVersion, MDownUrl := MGetVersion("https://api.github.com/repos/Anuken/Mindustry/releases")
+	WVersion, WJarUrl, WZipUrl := WGetVersion("https://api.github.com/repos/way-zer/ScriptAgent4MindustryExt/releases")
+	viper.Set("MindustryVersion", MVersion)
 	viper.Set("MindustryTagUrl", "https://api.github.com/repos/Anuken/Mindustry/releases")
-	viper.Set("WayZerVersion", "1")
+	viper.Set("WayZerVersion", WVersion)
 	viper.Set("WayZerTagUrl", "https://api.github.com/repos/way-zer/ScriptAgent4MindustryExt/releases")
 	if err := viper.SafeWriteConfig(); err != nil {
 		fmt.Println(err)
+	}
+	DownList := NewDownloader("./")
+	DownList.Concurrent = 3
+	DownList.AppendResource("server.jar", MDownUrl)
+	DownList.AppendResource("WayZer.jar", WJarUrl)
+	DownList.AppendResource("WayZer.zip", WZipUrl)
+	err := DownList.Start()
+	if err != nil {
+		return
 	}
 	fmt.Println("初始化完成请重启!!!")
 }
