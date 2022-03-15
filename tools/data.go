@@ -23,7 +23,7 @@ func MGetVersion(url string) (string, string) {
 	DownUrl := gjson.Get(string(body), "0.assets.1.browser_download_url")
 	return fmt.Sprint(tag), fmt.Sprint(DownUrl)
 }
-func WGetVersion(url string) (string, string, string) {
+func WGetVersion(url string) (string, string, string, string) {
 	client := &http.Client{}
 	resp, err := client.Get(url)
 	defer resp.Body.Close()
@@ -33,8 +33,9 @@ func WGetVersion(url string) (string, string, string) {
 	}
 	tag := gjson.Get(string(body), "0.tag_name")
 	JarDownUrl := gjson.Get(string(body), "0.assets.2.browser_download_url")
-	ZipDownUrl := gjson.Get(string(body), "0.assets.1.browser_download_url")
-	return fmt.Sprint(tag), fmt.Sprint(JarDownUrl), fmt.Sprint(ZipDownUrl)
+	scriptsDownUrl := gjson.Get(string(body), "0.assets.1.browser_download_url")
+	cacheDownUrl := gjson.Get(string(body), "0.assets.0.browser_download_url")
+	return fmt.Sprint(tag), fmt.Sprint(JarDownUrl), fmt.Sprint(scriptsDownUrl), fmt.Sprint(cacheDownUrl)
 }
 
 func DeCompressZip(zipFile string, destDir string) error {

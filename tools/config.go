@@ -26,12 +26,16 @@ func GetConfig() Config {
 			return Config{}
 		}
 	}
-	viper.Unmarshal(&config)
+	err := viper.Unmarshal(&config)
+	if err != nil {
+		fmt.Println(err)
+		return Config{}
+	}
 	return config
 }
 func InitConfig() {
 	MVersion, MDownUrl := MGetVersion("https://api.github.com/repos/Anuken/Mindustry/releases")
-	WVersion, WJarUrl, WZipUrl := WGetVersion("https://api.github.com/repos/way-zer/ScriptAgent4MindustryExt/releases")
+	WVersion, WJarUrl, WZipUrl, WCaAUrl := WGetVersion("https://api.github.com/repos/way-zer/ScriptAgent4MindustryExt/releases")
 	viper.Set("MindustryVersion", MVersion)
 	viper.Set("MindustryTagUrl", "https://api.github.com/repos/Anuken/Mindustry/releases")
 	viper.Set("WayZerVersion", WVersion)
@@ -44,6 +48,7 @@ func InitConfig() {
 	DownList.AppendResource("server.jar", MDownUrl)
 	DownList.AppendResource("WayZer.jar", WJarUrl)
 	DownList.AppendResource("WayZer.zip", WZipUrl)
+	DownList.AppendResource("Cache.zip", WCaAUrl)
 	err := DownList.Start()
 	if err != nil {
 		return
